@@ -1,0 +1,83 @@
+"""
+--------------------------------------------------------
+Week 2 - World Bank API
+
+Objective:
+Fetch India's GDP data using the World Bank API
+and save it into a CSV file.
+--------------------------------------------------------
+"""
+
+import requests
+import pandas as pd
+
+# ------------------------------------
+# Country and Indicator
+# ------------------------------------
+
+country = "IND"
+
+indicator = "NY.GDP.MKTP.CD"   # GDP (Current US$)
+
+# ------------------------------------
+# API URL
+# ------------------------------------
+
+url = f"https://api.worldbank.org/v2/country/{country}/indicator/{indicator}"
+
+params = {
+    "format": "json",
+    "per_page": 15
+}
+
+# ------------------------------------
+# Send API Request
+# ------------------------------------
+
+response = requests.get(url, params=params)
+
+# Convert response to JSON
+json_data = response.json()
+
+# Extract records
+records = json_data[1]
+
+# ------------------------------------
+# Store Data
+# ------------------------------------
+
+data = []
+
+for record in records:
+
+    year = record["date"]
+    gdp = record["value"]
+
+    data.append({
+        "Year": year,
+        "GDP (Current US$)": gdp
+    })
+
+# ------------------------------------
+# Convert to DataFrame
+# ------------------------------------
+
+df = pd.DataFrame(data)
+
+# ------------------------------------
+# Display Data
+# ------------------------------------
+
+print("=" * 50)
+print("India GDP Data from World Bank API")
+print("=" * 50)
+
+print(df)
+
+# ------------------------------------
+# Save CSV
+# ------------------------------------
+
+df.to_csv("india_gdp_data.csv", index=False)
+
+print("\nData saved successfully!")
